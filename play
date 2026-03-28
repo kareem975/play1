@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play - موقع الألعاب</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
+            background-size: 300% 300%;
+            animation: gradientShift 3s ease infinite;
+            padding: 20px 0;
+            box-shadow: 0 5px 20px rgba(0,255,255,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0,255,255,0.5);
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-btn {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+        }
+
+        .auth-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .login-btn, .admin-panel, .logout-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,255,255,0.3);
+        }
+
+        .login-btn:hover, .admin-panel:hover, .logout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,255,255,0.5);
+        }
+
+        .user-info {
+            background: rgba(0,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 20px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .sidebar-left, .sidebar-right {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            height: fit-content;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .sidebar-left h3, .sidebar-right h3 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .ad-item {
+            background: rgba(255,0,255,0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 5px 15px rgba(255,0,255,0.2);
+            position: relative;
+        }
+
+        .ad-item:hover {
+            border-color: #ff00ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255,0,255,0.4);
+        }
+
+        .ad-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .ad-timer {
+            font-size: 12px;
+            color: #ff00ff;
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ffff;
+            box-shadow: 0 20px 40px rgba(0,255,255,0.3);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .game-desc {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .play-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,255,255,0.5);
+        }
+
+        .admin-controls {
+            display: none;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-controls button {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #00ff00, #44ff44);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(20,20,40,0.95);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,255,255,0.3);
+            border: 2px solid #00ffff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(0,255,255,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            color: #00ffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,255,0,0.4);
+            z-index: 1001;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; padding: 10px; }
+            .sidebar-left, .sidebar-right { order: 3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="status" id="status"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🎮 PLAY</div>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="ابحث عن لعبة..." id="searchInput">
+                <button class="search-btn" id="searchBtn">🔍</button>
+            </div>
+            <div class="auth-section" id="authSection">
+                <button class="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="sidebar-left">
+            <h3>الإعلانات</h3>
+            <div id="adsContainer"></div>
+        </div>
+
+        <main>
+            <div class="admin-controls" id="adminControls">
+                <button onclick="openAddGameModal()">➕ إضافة لعبة</button>
+                <button onclick="openAddAdModal()">📢 إضافة إعلان</button>
+            </div>
+            <div class="games-grid" id="gamesGrid"></div>
+        </main>
+
+        <div class="sidebar-right">
+            <h3>الألعاب الشائعة</h3>
+            <div id="popularGames"></div>
+        </div>
+    </div>
+
+    <!-- مودال تسجيل الدخول -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2 style="text-align: center; color: #00ffff; margin-bottom: 30px;">تسجيل الدخول</h2>
+            <div class="form-group">
+                <label>اسم المستخدم</label>
+                <input type="text" id="username" placeholder="اكتب اسمك هنا">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="password" placeholder="اكتب كلمة المرور">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="handleLogin()">دخول</button>
+                <button class="btn-secondary" onclick="closeAllModals()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إضافة لعبة -->
+    <div class="modal" id="addGameModal">
+        <div class="modal-content">
+            <h2 style="text-align: center; color: #00ffff;">إضافة لعبة جديدة</h2>
+            <div class="form-group">
+                <label>اسم اللعبة</label>
+                <input type="text" id="gameName" placeholder="اسم اللعبة">
+            </div>
+            <div class="form-group">
+                <label>المواصفات</label>
+                <textarea id="gameDesc" rows="4" placeholder="وصف اللعبة..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>رابط صورة اللعبة</label>
+                <input type="url" id="gameImage" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="form-group">
+                <label>رابط اللعبة</label>
+                <input type="url" id="gameLink" placeholder="https://example.com/game">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="addGame()">إضافة اللعبة</button>
+                <button class="btn-secondary" onclick="closeAllModals()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إضافة إعلان - محدث بالأيام -->
+    <div class="modal" id="addAdModal">
+        <div class="modal-content">
+            <h2 style="text-align: center; color: #00ffff;">إضافة إعلان</h2>
+            <div class="form-group">
+                <label>رابط الصورة/الفيديو</label>
+                <input type="url" id="adImage" placeholder="https://example.com/ad.jpg">
+            </div>
+            <div class="form-group">
+                <label>رابط الإعلان</label>
+                <input type="url" id="adLink" placeholder="https://example.com/ad-link">
+            </div>
+            <div class="form-group">
+                <label>مدة الإعلان (بالأيام)</label>
+                <input type="number" id="adDuration" min="1" value="7" placeholder="7">
+                <small style="color: #ff00ff; display: block; margin-top: 5px;">مثال: 1 = يوم واحد، 7 = أسبوع، 30 = شهر</small>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="addAd()">إضافة الإعلان</button>
+                <button class="btn-secondary" onclick="closeAllModals()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAdmin = false;
+        let isLoggedIn = false;
+        let currentUser = '';
+        let games = JSON.parse(localStorage.getItem('games')) || [];
+        let ads = JSON.parse(localStorage.getItem('ads')) || [];
+
+        window.onload = function() {
+            checkLoginStatus();
+            renderGames();
+            renderAds();
+            setupEventListeners();
+        };
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('searchBtn').addEventListener('click', handleSearch);
+        }
+
+        function checkLoginStatus() {
+            const user = localStorage.getItem('user');
+            const role = localStorage.getItem('role');
+            if (user && role) {
+                currentUser = user;
+                isLoggedIn = true;
+                isAdmin = role === 'admin';
+            }
+            updateAuthUI();
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showStatus('❌ يرجى إدخال اسم المستخدم وكلمة المرور!', 'error');
+                return;
+            }
+
+            if (username === 'kareem' && password === '192.168.1.1') {
+                isAdmin = true;
+                localStorage.setItem('user', username);
+                localStorage.setItem('role', 'admin');
+                showStatus('🎉 تم تسجيل الدخول كمدير بنجاح!', 'success');
+            } else if (username && password) {
+                localStorage.setItem('user', username);
+                localStorage.setItem('role', 'user');
+                showStatus('✅ تم تسجيل الدخول بنجاح!', 'success');
+            } else {
+                showStatus('❌ بيانات غير صحيحة!', 'error');
+                return;
+            }
+
+            isLoggedIn = true;
+            currentUser = username;
+            closeAllModals();
+            updateAuthUI();
+            renderGames();
+        }
+
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('role');
+                isAdmin = false;
+                isLoggedIn = false;
+                currentUser = '';
+                updateAuthUI();
+                renderGames();
+                showStatus('👋 تم تسجيل الخروج', 'info');
+            }
+        }
+
+        function updateAuthUI() {
+            const authSection = document.getElementById('authSection');
+            if (isLoggedIn) {
+                authSection.innerHTML = `
+                    <span class="user-info">مرحباً ${currentUser} ${isAdmin ? '👑' : '👤'}</span>
+                    ${isAdmin ? '<button class="admin-panel" onclick="openAdminPanel()">لوحة التحكم</button>' : ''}
+                    <button class="logout-btn" onclick="logout()">خروج</button>
+                `;
+                document.getElementById('adminControls').style.display = 'flex';
+            } else {
+                authSection.innerHTML = `<button class="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>`;
+                document.getElementById('adminControls').style.display = 'none';
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('username').focus();
+        }
+
+        function openAdminPanel() { openAddGameModal(); }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+        }
+
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.style.background = type === 'success' ? 
+                'linear-gradient(45deg, #00ff88, #00ff00)' : 
+                type === 'error' ? 'linear-gradient(45deg, #ff4444, #ff0000)' :
+                'linear-gradient(45deg, #ffaa00, #ffff00)';
+            status.style.display = 'block';
+            setTimeout(() => status.style.display = 'none', 3000);
+        }
+
+        function addGame() {
+            const name = document.getElementById('gameName').value.trim();
+            const desc = document.getElementById('gameDesc').value.trim();
+            const image = document.getElementById('gameImage').value.trim();
+            const link = document.getElementById('gameLink').value.trim();
+
+            if (!name || !desc || !image || !link) {
+                showStatus('يرجى ملء جميع الحقول!', 'error');
+                return;
+            }
+
+            const game = { id: Date.now(), name, desc, image, link };
+            games.unshift(game);
+            localStorage.setItem('games', JSON.stringify(games));
+            renderGames();
+            closeAllModals();
+            showStatus('🎮 تم إضافة اللعبة!');
+            clearGameForm();
+        }
+
+        function deleteGame(id) {
+            if (confirm('هل أنت متأكد؟')) {
+                games = games.filter(game => game.id !== id);
+                localStorage.setItem('games', JSON.stringify(games));
+                renderGames();
+                showStatus('🗑️ تم الحذف!');
+            }
+        }
+
+        // ✅ وظيفة إضافة إعلان مُصححة - بالأيام
+        function addAd() {
+            const image = document.getElementById('adImage').value.trim();
+            const link = document.getElementById('adLink').value.trim();
+            const days = parseInt(document.getElementById('adDuration').value);
+
+            if (!image || !link || !days || days <= 0) {
+                showStatus('❌ يرجى ملء جميع الحقول بشكل صحيح!', 'error');
+                return;
+            }
+
+            // تحويل الأيام لميلي ثانية (1 يوم = 24 ساعة × 60 دقيقة × 60 ثانية × 1000)
+            const expires = Date.now() + (days * 24 * 60 * 60 * 1000);
+            
+            const ad = { 
+                id: Date.now(), 
+                image, 
+                link, 
+                days,
+                expires 
+            };
+
+            ads.unshift(ad);
+            localStorage.setItem('ads', JSON.stringify(ads));
+            renderAds();
+            closeAllModals();
+            showStatus(`📢 تم إضافة الإعلان لـ ${days} يوم${days > 1 ? 'يام' : 'يوم'}!`, 'success');
+            clearAdForm();
+        }
+
+        function deleteAd(id) {
+            if (confirm('هل أنت متأكد من حذف الإعلان؟')) {
+                ads = ads.filter(ad => ad.id !== id);
+                localStorage.setItem('ads', JSON.stringify(ads));
+                renderAds();
+                showStatus('🗑️ تم حذف الإعلان!', 'success');
+            }
+        }
+
+        // ✅ عرض الإعلانات مع المؤقت بالأيام/الساعات
+        function renderAds() {
+            const container = document.getElementById('adsContainer');
+            // حذف الإعلانات المنتهية
+            ads = ads.filter(ad => ad.expires > Date.now());
+            localStorage.setItem('ads', JSON.stringify(ads));
+            container.innerHTML = '';
+
+            ads.forEach(ad => {
+                const adItem = document.createElement('div');
+                adItem.className = 'ad-item';
+                
+                // حساب الوقت المتبقي
+                const timeLeft = ad.expires - Date.now();
+                const daysLeft = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+                const hoursLeft = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                
+                adItem.innerHTML = `
+                    ${isAdmin ? 
+                        `<button onclick="deleteAd(${ad.id})" title="حذف الإعلان" style="position: absolute; top: 5px; left: 5px; background: #ff4444; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; color: white; font-size: 14px; font-weight: bold;">×</button>` : 
+                        ''
+                    }
+                    <a href="${ad.link}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                        <img src="${ad.image}" alt="إعلان" onerror="this.src='https://via.placeholder.com/200x100/ff00ff/ffffff?text=إعلان'">
+                    </a>
+                    ${isAdmin ? `<div class="ad-timer">⏰ يتبقى: ${daysLeft}ي ${hoursLeft}س</div>` : ''}
+                `;
+                container.appendChild(adItem);
+            });
+        }
+
+        function renderGames(filteredGames = games) {
+            const gamesGrid = document.getElementById('gamesGrid');
+            gamesGrid.innerHTML = '';
+            
+            filteredGames.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                gameCard.innerHTML = `
+                    <img src="${game.image}" alt="${game.name}" class="game-image" 
+                         onerror="this.src='https://via.placeholder.com/300x200/1a1a2e/00ffff?text=${encodeURIComponent(game.name)}'">
+                    <div class="game-info">
+                        <h3 class="game-title">${game.name}</h3>
+                        <p class="game-desc">${game.desc}</p>
+                        ${isAdmin ? 
+                            `<button onclick="deleteGame(${game.id})" style="background: linear-gradient(45deg, #ff4444, #ff0000); width: 100%; margin-bottom: 10px; padding: 10px;">🗑️ حذف</button>` : 
+                            ''
+                        }
+                        <button class="play-btn" onclick="window.open('${game.link}', '_blank')">🚀 لعب الآن</button>
+                    </div>
+                `;
+                gamesGrid.appendChild(gameCard);
+            });
+        }
+
+        function handleSearch() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = games.filter(game => 
+                game.name.toLowerCase().includes(term) || 
+                game.desc.toLowerCase().includes(term)
+            );
+            renderGames(filtered);
+        }
+
+        function openAddGameModal() { document.getElementById('addGameModal').style.display = 'flex'; }
+        function openAddAdModal() { 
+            document.getElementById('addAdModal').style.display = 'flex';
+            document.getElementById('adImage').focus();
+        }
+
+        function clearGameForm() {
+            ['gameName', 'gameDesc', 'gameImage', 'gameLink'].forEach(id => 
+                document.getElementById(id).value = ''
+            );
+        }
+
+        function clearAdForm() {
+            document.getElementById('adImage').value = '';
+            document.getElementById('adLink').value = '';
+            document.getElementById('adDuration').value = '7';
+        }
+
+        if (games.length === 0) {
+            games = [
+                {id:1, name:'سباق السيارات', desc:'سباق مثير!', image:'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=300&h=200&fit=crop', link:'https://google.com'},
+                {id:2, name:'مغامرات الفضاء', desc:'استكشف الكون!', image:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=300&h=200&fit=crop', link:'https://google.com'}
+            ];
+            localStorage.setItem('games', JSON.stringify(games));
+        }
+
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) closeAllModals();
+        };
+
+        // تحديث الإعلانات كل ساعة (للأيام)
+        setInterval(renderAds, 3600000); // كل ساعة
+        setInterval(renderAds, 60000); // كل دقيقة للاختبار
+    </script>
+</body>
+</html>
